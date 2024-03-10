@@ -9,17 +9,21 @@ with open('./xgboost.pkl', 'rb') as f:
 
 @app.route('/getaqi', methods=['POST'])
 def create_book():
-    json_data = request.json
-    if json_data and 'data' in json_data:
-        data_list = json_data['data']
+    try:
+        json_data = request.json
+        if json_data and 'data' in json_data:
+            data_list = json_data['data']
 
-    # data_list = [16.64, 49.97, 4.05, 29.26, 18.8, 10.03, 0.52, 9.84, 28.3, 0.0, 0.0, 0.0]
-    latest_data = np.array(data_list)
-    latest_data = latest_data.reshape(1, -1)
+        # data_list = [16.64, 49.97, 4.05, 29.26, 18.8, 10.03, 0.52, 9.84, 28.3, 0.0, 0.0, 0.0]
+        latest_data = np.array(data_list)
+        latest_data = latest_data.reshape(1, -1)
 
-    prediction=float(model.predict(latest_data)[0])
-    response_data = {'aqi': prediction}
-    return jsonify(response_data)
+        prediction=float(model.predict(latest_data)[0])
+        response_data = {'aqi': prediction}
+        return jsonify(response_data),200
+    except Exception as e:
+       return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
